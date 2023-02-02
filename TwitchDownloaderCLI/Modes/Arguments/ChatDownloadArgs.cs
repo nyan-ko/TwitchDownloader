@@ -7,6 +7,18 @@ namespace TwitchDownloaderCLI.Modes.Arguments
     [Verb("chatdownload", HelpText = "Downloads the chat from a VOD or clip")]
     public class ChatDownloadArgs
     {
+        public static ChatDownloadArgs HardcodedSettings(string id, int connections=10) {
+            return new ChatDownloadArgs() {
+            Id=id, 
+            OutputFile=$"{id}.txt", 
+            CropBeginningTime=0, 
+            CropEndingTime=0, 
+            TimeFormat=TimestampFormat.Relative,
+            ChatConnections=connections,
+            BttvEmotes=false, FfzEmotes=false, StvEmotes=false
+            };
+        }
+
         [Option('u', "id", Required = true, HelpText = "The ID or URL of the VOD or clip to download that chat of.")]
         public string Id { get; set; }
 

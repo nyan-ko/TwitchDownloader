@@ -4,6 +4,8 @@ using System.IO;
 using TwitchDownloaderCLI.Modes;
 using TwitchDownloaderCLI.Modes.Arguments;
 using TwitchDownloaderCLI.Tools;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace TwitchDownloaderCLI
 {
@@ -17,15 +19,22 @@ namespace TwitchDownloaderCLI
 
             string[] preParsedArgs = PreParseArgs.Parse(args, processFileName);
 
-            Parser.Default.ParseArguments<VideoDownloadArgs, ClipDownloadArgs, ChatDownloadArgs, ChatUpdateArgs, ChatRenderArgs, FfmpegArgs, CacheArgs>(preParsedArgs)
-                .WithParsed<VideoDownloadArgs>(DownloadVideo.Download)
-                .WithParsed<ClipDownloadArgs>(DownloadClip.Download)
-                .WithParsed<ChatDownloadArgs>(DownloadChat.Download)
-                .WithParsed<ChatUpdateArgs>(UpdateChat.Update)
-                .WithParsed<ChatRenderArgs>(RenderChat.Render)
-                .WithParsed<FfmpegArgs>(FfmpegHandler.ParseArgs)
-                .WithParsed<CacheArgs>(CacheHandler.ParseArgs)
-                .WithNotParsed(_ => Environment.Exit(1));
+            List<Task> tasks = new List<Task>();
+            foreach (string str in args) {
+                var arg = ChatDownloadArgs.HardcodedSettings(str);
+                tasks.Add(DownloadChat.Download(arg));
+            }
+            (Task.WhenAll(tasks)).Wait();
+
+            // Parser.Default.ParseArguments<VideoDownloadArgs, ClipDownloadArgs, ChatDownloadArgs, ChatUpdateArgs, ChatRenderArgs, FfmpegArgs, CacheArgs>(preParsedArgs)
+            //     .WithParsed<VideoDownloadArgs>(DownloadVideo.Download)
+            //     .WithParsed<ClipDownloadArgs>(DownloadClip.Download)
+            //     .WithParsed<ChatDownloadArgs>(DownloadChat.Download)
+            //     .WithParsed<ChatUpdateArgs>(UpdateChat.Update)
+            //     .WithParsed<ChatRenderArgs>(RenderChat.Render)
+            //     .WithParsed<FfmpegArgs>(FfmpegHandler.ParseArgs)
+            //     .WithParsed<CacheArgs>(CacheHandler.ParseArgs)
+            //     .WithNotParsed(_ => Environment.Exit(1));
         }
 
         static void WriteNoArgHelpText(string[] args, string processFileName)

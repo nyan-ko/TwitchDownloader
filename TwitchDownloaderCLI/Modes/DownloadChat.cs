@@ -6,12 +6,13 @@ using TwitchDownloaderCLI.Modes.Arguments;
 using TwitchDownloaderCLI.Tools;
 using TwitchDownloaderCore;
 using TwitchDownloaderCore.Options;
+using System.Threading.Tasks;
 
 namespace TwitchDownloaderCLI.Modes
 {
     internal class DownloadChat
     {
-        internal static void Download(ChatDownloadArgs inputOptions)
+        internal static async Task Download(ChatDownloadArgs inputOptions)
         {
             ChatDownloadOptions downloadOptions = GetDownloadOptions(inputOptions);
 
